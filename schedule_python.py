@@ -68,12 +68,12 @@ async def schedule_posts(client, chat_info):
     '''
 
     # пост-знакомство будет запланирован к публикации ровно за день до первого урока. Если это время в прошлом, пост публикуется сразу
-    # await client.send_file(
-    #     chat_info['id'],
-    #     greeting_pictures,
-    #     caption=greeting_text,
-    #     schedule=greeting_date
-    # )
+    await client.send_file(
+        chat_info['id'],
+        greeting_pictures,
+        caption=greeting_text,
+        schedule=greeting_date
+    )
 
 
     # пост с чеклистом в первый день
@@ -88,12 +88,12 @@ async def schedule_posts(client, chat_info):
 Жду вас и детей на онлайн-платформе в {course_date.hour}:{course_date.minute:02d} мск.
 
 А до начала занятия предлагаю проверить, что вы полностью готовы! Чтобы было проще, сделали для вас чек-лист 😉 Если что-то забыли — еще есть время доделать 💜'''
-    # await client.send_file(
-    #     chat_info['id'],
-    #     checklist,
-    #     caption=chek_text,
-    #     schedule=checklist_time
-    # )
+    await client.send_file(
+        chat_info['id'],
+        checklist,
+        caption=chek_text,
+        schedule=checklist_time
+    )
 
     # обратная связь по дню 1
     feedback_1_date = (course_date + timedelta(days=1)).replace(hour=10, minute=0)
@@ -107,15 +107,15 @@ async def schedule_posts(client, chat_info):
 
 Если есть вопросы, пожелания, комментарии по поводу прошедшего урока, пишите!'''
 
-    # await client.send_file(
-    #     chat_info['id'],
-    #     video_1,
-    #     supports_streaming=True,
-    #     video_note=False,
-    #     caption=feedback_1_text,
-    #     schedule=feedback_1_date,
-    #     attributes=VIDEO_ATTRS,
-    # )
+    await client.send_file(
+        chat_info['id'],
+        video_1,
+        supports_streaming=True,
+        video_note=False,
+        caption=feedback_1_text,
+        schedule=feedback_1_date,
+        attributes=VIDEO_ATTRS,
+    )
 
     # пост с карточками про Python во второй день
     cards_date = (course_date + timedelta(days=1)) - timedelta(minutes=30)
@@ -128,12 +128,12 @@ async def schedule_posts(client, chat_info):
 Если вдруг кто-то из детей пропустил первое занятие, можно сейчас пройти прошлый урок на онлайн-платформе.
 
 Жду ребят в {course_date.hour}:{course_date.minute:02d} на втором уроке!'''
-    # await client.send_file(
-    #     chat_info['id'],
-    #     cards_pictures,
-    #     caption=cards_text,
-    #     schedule=cards_date
-    # )
+    await client.send_file(
+        chat_info['id'],
+        cards_pictures,
+        caption=cards_text,
+        schedule=cards_date
+    )
 
     # обратная связь по дню 2
     feedback_2_date = (course_date + timedelta(days=2)).replace(hour=10, minute=0)
@@ -144,15 +144,15 @@ async def schedule_posts(client, chat_info):
 
 Продолжаю делиться результатами обучения на мини-курсе. Отправляю видео с рассказом о том, чем мы занимались на втором уроке 😊'''
 
-    # await client.send_file(
-    #     chat_info['id'],
-    #     video_2,
-    #     supports_streaming=True,
-    #     video_note=False,
-    #     caption=feedback_2_text,
-    #     schedule=feedback_2_date,
-    #     attributes=VIDEO_ATTRS,
-    # )
+    await client.send_file(
+        chat_info['id'],
+        video_2,
+        supports_streaming=True,
+        video_note=False,
+        caption=feedback_2_text,
+        schedule=feedback_2_date,
+        attributes=VIDEO_ATTRS,
+    )
 
     # приглашение на третий урок
     final_date = (course_date + timedelta(days=2)) - timedelta(hours=1)
@@ -167,11 +167,11 @@ async def schedule_posts(client, chat_info):
 
 Начинаем в {course_date.hour}:{course_date.minute:02d} по Москве💜'''
 
-    # await client.send_message(
-    #     chat_info['id'],
-    #     message=final_text,
-    #     schedule=final_date
-    # )
+    await client.send_message(
+        chat_info['id'],
+        message=final_text,
+        schedule=final_date
+    )
 
     # обратная связь по дню 3
     feedback_3_date = (course_date + timedelta(days=3)).replace(hour=10, minute=0)
@@ -198,4 +198,15 @@ async def schedule_posts(client, chat_info):
         caption=feedback_3_text,
         schedule=feedback_3_date,
         attributes=VIDEO_ATTRS,
+    )
+
+    # пост с презентацией
+    checklist = '/Users/vadim/Documents/algoritmika/python_presentation.pdf'
+    chek_text = f'''
+    Файл с презентацией и ценами ✍️'''
+    await client.send_file(
+        chat_info['id'],
+        file=checklist,
+        caption=chek_text,
+        schedule=feedback_3_date
     )
