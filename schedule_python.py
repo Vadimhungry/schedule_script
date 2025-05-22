@@ -118,7 +118,7 @@ async def schedule_posts(client, chat_info):
     # )
 
     # пост с карточками про Python во второй день
-    cards_date = (course_date + timedelta(days=2)) - timedelta(minutes=30)
+    cards_date = (course_date + timedelta(days=1)) - timedelta(minutes=30)
     cards_pictures = get_pictures('/Users/vadim/Documents/algoritmika/python_img')
     cards_text = f'''
     Здравствуйте! Сегодня состоится второй урок мини-курса 😎
