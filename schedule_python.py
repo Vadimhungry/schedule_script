@@ -12,6 +12,15 @@ from telethon.tl.types import DocumentAttributeVideo
 
 async def schedule_posts(client, chat_info):
 
+    VIDEO_ATTRS = [
+        DocumentAttributeVideo(
+            duration=0,  # длительность поставит Телеграм
+            w=720,  # ширина
+            h=1280,  # высота
+            supports_streaming=True
+        )
+    ]
+
     date_pattern = r'\b(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\b'
     time_pattern = r"\b\d{1,2}:\d{2}\b"
 
@@ -78,14 +87,7 @@ async def schedule_posts(client, chat_info):
     feedback_1_date = (course_date + timedelta(days=1)).replace(hour=10, minute=0)
     video_1 = '/Users/vadim/Documents/algoritmika/video/python_day_1_test.mp4'
 
-    video_1_attrs = [
-        DocumentAttributeVideo(
-            duration=0,  # длительность поставит Телеграм
-            w=720,  # ширина
-            h=1280,  # высота
-            supports_streaming=True
-        )
-    ]
+
     feedback_1_text = '''
     Еще раз здравствуйте, уважаемые родители!
 
@@ -93,12 +95,12 @@ async def schedule_posts(client, chat_info):
 
 Если есть вопросы, пожелания, комментарии по поводу прошедшего урока, пишите!'''
 
-    await client.send_file(
-        chat_info['id'],
-        video_1,
-        supports_streaming=True,
-        video_note=False,
-        caption=feedback_1_text,
-        schedule=feedback_1_date,
-        attributes=video_1_attrs,
-    )
+    # await client.send_file(
+    #     chat_info['id'],
+    #     video_1,
+    #     supports_streaming=True,
+    #     video_note=False,
+    #     caption=feedback_1_text,
+    #     schedule=feedback_1_date,
+    #     attributes=VIDEO_ATTRS,
+    # )
