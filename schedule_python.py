@@ -134,3 +134,22 @@ async def schedule_posts(client, chat_info):
     #     caption=cards_text,
     #     schedule=cards_date
     # )
+
+    # обратная связь по дню 2
+    feedback_2_date = (course_date + timedelta(days=2)).replace(hour=10, minute=0)
+    video_2 = '/Users/vadim/Documents/algoritmika/video/python_day_2_test.mp4'
+
+    feedback_2_text = '''
+    Здравствуйте, дорогие родители!
+
+Продолжаю делиться результатами обучения на мини-курсе. Отправляю видео с рассказом о том, чем мы занимались на втором уроке 😊'''
+
+    # await client.send_file(
+    #     chat_info['id'],
+    #     video_2,
+    #     supports_streaming=True,
+    #     video_note=False,
+    #     caption=feedback_2_text,
+    #     schedule=feedback_2_date,
+    #     attributes=VIDEO_ATTRS,
+    # )
