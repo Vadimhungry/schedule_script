@@ -9,6 +9,13 @@ from datetime import datetime, timedelta,timezone
 import re
 from telethon.tl.types import DocumentAttributeVideo
 
+def get_pictures(folder_path):
+    return sorted([
+        os.path.join(folder_path, f)
+        for f in os.listdir(folder_path)
+        if os.path.isfile(os.path.join(folder_path, f))
+    ])
+
 
 async def schedule_posts(client, chat_info):
 
@@ -45,13 +52,8 @@ async def schedule_posts(client, chat_info):
     # дата отправки сообщения-знакомства с карточками
     greeting_date = (course_date - timedelta(days=1))
 
-    # готовим пост
-    my_cards_folder = '/Users/vadim/Documents/algoritmika/my_cards/'
-    greeting_pictures = sorted([
-        os.path.join(my_cards_folder, f)
-        for f in os.listdir(my_cards_folder)
-        if os.path.isfile(os.path.join(my_cards_folder, f))
-    ])
+    # готовим пост-знакомство
+    greeting_pictures = get_pictures('/Users/vadim/Documents/algoritmika/my_cards/')
 
     greeting_text = '''
     Здравствуйте, уважаемые родители! 
@@ -66,10 +68,15 @@ async def schedule_posts(client, chat_info):
     '''
 
     # пост-знакомство будет запланирован к публикации ровно за день до первого урока. Если это время в прошлом, пост публикуется сразу
-    # await client.send_file(chat_info['id'], greeting_pictures, caption=greeting_text, schedule=greeting_date)
+    # await client.send_file(
+    #     chat_info['id'],
+    #     greeting_pictures,
+    #     caption=greeting_text,
+    #     schedule=greeting_date
+    # )
 
 
-    # посты первого дня
+    # пост с чеклистом в первый день
 
     checklist_time = course_date - timedelta(minutes=30)
     checklist = '/Users/vadim/Documents/algoritmika/check-list.pdf'
@@ -78,10 +85,15 @@ async def schedule_posts(client, chat_info):
 
 Через 30 минут начинаем обучение на мини-курсе по Python 🔥
 
-Жду вас и детей на онлайн-платформе в {checklist_time.hour}:{checklist_time.minute:02d} мск.
+Жду вас и детей на онлайн-платформе в {course_date.hour}:{course_date.minute:02d} мск.
 
 А до начала занятия предлагаю проверить, что вы полностью готовы! Чтобы было проще, сделали для вас чек-лист 😉 Если что-то забыли — еще есть время доделать 💜'''
-    # await client.send_file(chat_info['id'], checklist, caption=chek_text, schedule=checklist_time)
+    # await client.send_file(
+    #     chat_info['id'],
+    #     checklist,
+    #     caption=chek_text,
+    #     schedule=checklist_time
+    # )
 
     # обратная связь по дню 1
     feedback_1_date = (course_date + timedelta(days=1)).replace(hour=10, minute=0)
@@ -103,4 +115,22 @@ async def schedule_posts(client, chat_info):
     #     caption=feedback_1_text,
     #     schedule=feedback_1_date,
     #     attributes=VIDEO_ATTRS,
+    # )
+
+    # пост с карточками про Python во второй день
+    cards_date = (course_date + timedelta(days=2)) - timedelta(minutes=30)
+    cards_pictures = get_pictures('/Users/vadim/Documents/algoritmika/python_img')
+    cards_text = f'''
+    Здравствуйте! Сегодня состоится второй урок мини-курса 😎
+
+Предлагаю вам побольше узнать про язык Python. Так вы будете лучше понимать, чем занимаются ребята на занятиях. И не растеряетесь, когда дети начнут рассказывать вам про алгоритмы, переменные и функции 😉 Читайте про Python в карточках.
+
+Если вдруг кто-то из детей пропустил первое занятие, можно сейчас пройти прошлый урок на онлайн-платформе.
+
+Жду ребят в {course_date.hour}:{course_date.minute:02d} на втором уроке!'''
+    # await client.send_file(
+    #     chat_info['id'],
+    #     cards_pictures,
+    #     caption=cards_text,
+    #     schedule=cards_date
     # )
