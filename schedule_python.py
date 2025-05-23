@@ -1,9 +1,3 @@
-from telethon import TelegramClient
-from telethon.tl.functions.messages import SendMediaRequest
-from telethon.tl.types import InputMediaUploadedPhoto
-from telethon.tl.types import InputPeerChannel, InputSingleMedia
-from telethon.tl.functions.messages import SendMultiMediaRequest, SendMessageRequest
-import random
 import os
 from datetime import datetime, timedelta,timezone
 import re
