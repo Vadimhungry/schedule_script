@@ -1,5 +1,5 @@
 from telethon import TelegramClient
-from schedule_python import schedule_posts
+from python.schedule import schedule_posts
 from dotenv import load_dotenv
 import os
 

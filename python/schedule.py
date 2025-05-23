@@ -1,7 +1,8 @@
 import os
-from datetime import datetime, timedelta,timezone
 import re
+from datetime import datetime, timedelta,timezone
 from telethon.tl.types import DocumentAttributeVideo
+from python.dates import get_posts_dates
 
 def get_pictures(folder_path):
     return sorted([
@@ -13,6 +14,7 @@ def get_pictures(folder_path):
 
 async def schedule_posts(client, chat_info):
 
+    # настройка для корректного постинга видео
     VIDEO_ATTRS = [
         DocumentAttributeVideo(
             duration=0,  # длительность поставит Телеграм
@@ -22,29 +24,8 @@ async def schedule_posts(client, chat_info):
         )
     ]
 
-    date_pattern = r'\b(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\b'
-    time_pattern = r"\b\d{1,2}:\d{2}\b"
-
-    # добавляем таймзону (МСК — UTC+3)
-    moscow_now = datetime.now().replace(tzinfo=timezone(timedelta(hours=3)))
-
-    course_day, course_month = re.search(date_pattern, chat_info['title']).group().split('.')
-    course_hour, course_minute = re.search(time_pattern, chat_info['title']).group().split(':')
-
-    month_now = datetime.now().strftime('%m')
-    day_now = datetime.now().strftime('%d')
-    year_now = datetime.now().strftime('%Y')
-
-    if month_now > course_month:
-        course_year = int(year_now) + 1
-    else:
-        course_year = int(year_now)
-
-    # дата начала курса. Московское время считаем как UTC + 3 часа
-    course_date = datetime(course_year, int(course_month), int(course_day), int(course_hour), int(course_minute)).replace(tzinfo=timezone(timedelta(hours=3)))
-
-    # дата отправки сообщения-знакомства с карточками
-    greeting_date = (course_date - timedelta(days=1))
+    # получаем даты постов
+    dates = get_posts_dates(chat_info['title'])
 
     # готовим пост-знакомство
     greeting_pictures = get_pictures('/Users/vadim/Documents/algoritmika/my_cards/')
@@ -66,31 +47,28 @@ async def schedule_posts(client, chat_info):
         chat_info['id'],
         greeting_pictures,
         caption=greeting_text,
-        schedule=greeting_date
+        schedule=dates['greeting_date']
     )
-
 
     # пост с чеклистом в первый день
 
-    checklist_time = course_date - timedelta(minutes=30)
     checklist = '/Users/vadim/Documents/algoritmika/check-list.pdf'
     chek_text = f'''
     Всем здравствуйте!
 
 Через 30 минут начинаем обучение на мини-курсе по Python 🔥
 
-Жду вас и детей на онлайн-платформе в {course_date.hour}:{course_date.minute:02d} мск.
+Жду вас и детей на онлайн-платформе в {dates['course_date'].hour}:{dates['course_date'].minute:02d} мск.
 
 А до начала занятия предлагаю проверить, что вы полностью готовы! Чтобы было проще, сделали для вас чек-лист 😉 Если что-то забыли — еще есть время доделать 💜'''
     await client.send_file(
         chat_info['id'],
         checklist,
         caption=chek_text,
-        schedule=checklist_time
+        schedule=dates['checklist_date']
     )
 
     # обратная связь по дню 1
-    feedback_1_date = (course_date + timedelta(days=1)).replace(hour=10, minute=0)
     video_1 = '/Users/vadim/Documents/algoritmika/video/python_day_1_test.mp4'
 
 
@@ -107,12 +85,11 @@ async def schedule_posts(client, chat_info):
         supports_streaming=True,
         video_note=False,
         caption=feedback_1_text,
-        schedule=feedback_1_date,
+        schedule=dates['feedback_1'],
         attributes=VIDEO_ATTRS,
     )
 
     # пост с карточками про Python во второй день
-    cards_date = (course_date + timedelta(days=1)) - timedelta(minutes=30)
     cards_pictures = get_pictures('/Users/vadim/Documents/algoritmika/python_img')
     cards_text = f'''
     Здравствуйте! Сегодня состоится второй урок мини-курса 😎
@@ -121,16 +98,15 @@ async def schedule_posts(client, chat_info):
 
 Если вдруг кто-то из детей пропустил первое занятие, можно сейчас пройти прошлый урок на онлайн-платформе.
 
-Жду ребят в {course_date.hour}:{course_date.minute:02d} на втором уроке!'''
+Жду ребят в {dates['course_date'].hour}:{dates['course_date'].minute:02d} на втором уроке!'''
     await client.send_file(
         chat_info['id'],
         cards_pictures,
         caption=cards_text,
-        schedule=cards_date
+        schedule=dates['cards']
     )
 
     # обратная связь по дню 2
-    feedback_2_date = (course_date + timedelta(days=2)).replace(hour=10, minute=0)
     video_2 = '/Users/vadim/Documents/algoritmika/video/python_day_2_test.mp4'
 
     feedback_2_text = '''
@@ -144,12 +120,11 @@ async def schedule_posts(client, chat_info):
         supports_streaming=True,
         video_note=False,
         caption=feedback_2_text,
-        schedule=feedback_2_date,
+        schedule=dates['feedback_2'],
         attributes=VIDEO_ATTRS,
     )
 
     # приглашение на третий урок
-    final_date = (course_date + timedelta(days=2)) - timedelta(hours=1)
     final_text = f'''
     Всем здравствуйте!
 
@@ -159,16 +134,15 @@ async def schedule_posts(client, chat_info):
 
 Если вдруг не получается прийти на весь урок, присоединяйтесь за 10 минут до окончания.
 
-Начинаем в {course_date.hour}:{course_date.minute:02d} по Москве💜'''
+Начинаем в {dates['course_date'].hour}:{dates['course_date'].minute:02d} по Москве💜'''
 
     await client.send_message(
         chat_info['id'],
         message=final_text,
-        schedule=final_date
+        schedule=dates['final']
     )
 
     # обратная связь по дню 3
-    feedback_3_date = (course_date + timedelta(days=3)).replace(hour=10, minute=0)
     video_3 = '/Users/vadim/Documents/algoritmika/video/python_day_3_test.mp4'
 
     feedback_3_text = '''
@@ -190,7 +164,7 @@ async def schedule_posts(client, chat_info):
         supports_streaming=True,
         video_note=False,
         caption=feedback_3_text,
-        schedule=feedback_3_date,
+        schedule=dates['feedback_3'],
         attributes=VIDEO_ATTRS,
     )
 
@@ -202,5 +176,5 @@ async def schedule_posts(client, chat_info):
         chat_info['id'],
         file=checklist,
         caption=chek_text,
-        schedule=feedback_3_date
+        schedule=dates['feedback_3']
     )
