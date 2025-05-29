@@ -39,22 +39,21 @@ async def schedule_posts(client, chat_info):
     greeting_pictures = get_pictures("/Users/vadim/Documents/algoritmika/my_cards/")
 
     # пост-знакомство будет запланирован к публикации ровно за день до первого урока. Если это время в прошлом, пост публикуется сразу
-    # await client.send_file(
-    #     chat_info["id"],
-    #     greeting_pictures,
-    #     caption=messages["greeting"],
-    #     schedule=dates["greeting_date"],
-    # )
+    await client.send_file(
+        chat_info["id"],
+        greeting_pictures,
+        caption=messages["greeting"],
+        schedule=dates["greeting_date"],
+    )
 
     # пост с чеклистом в первый день
-
     checklist = "/Users/vadim/Documents/algoritmika/check-list.pdf"
 
     await client.send_file(
         chat_info["id"],
         checklist,
         caption=messages["checklist"].format(
-            hour=dates["checklist_date"].hour, minute=dates["checklist_date"].minute
+            hour=dates["course_hour"], minute=dates["course_minute"]
         ),
         schedule=dates["checklist_date"],
     )
@@ -78,7 +77,7 @@ async def schedule_posts(client, chat_info):
         chat_info["id"],
         cards_pictures,
         caption=messages["cards"].format(
-            hour=dates["cards"].hour, minute=dates["cards"].minute
+            hour=dates["course_hour"], minute=dates["course_minute"]
         ),
         schedule=dates["cards"],
     )
@@ -100,7 +99,7 @@ async def schedule_posts(client, chat_info):
     await client.send_message(
         chat_info["id"],
         message=messages["final"].format(
-            hour=dates["final"].hour, minute=dates["final"].minute
+            hour=dates["course_hour"], minute=dates["course_minute"]
         ),
         schedule=dates["final"],
     )
@@ -128,6 +127,6 @@ async def schedule_posts(client, chat_info):
         schedule=dates["feedback_3"],
     )
 
-    # todo вынести получение текстов в отдельный файл
+    # todo минуты в постах должно всегда быть 2 цифры
     # todo вынести получение видео в отдельный файл
     # todo вынести получение файлов в отдельный файл

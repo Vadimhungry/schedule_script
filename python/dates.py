@@ -26,6 +26,9 @@ def get_posts_dates(course_title):
                            int(course_minute)).replace(tzinfo=timezone(timedelta(hours=3)))
     dates['course_date'] = course_date
 
+    dates['course_hour'] = course_date.strftime('%H')
+    dates['course_minute'] = course_date.strftime('%M')
+
     # дата отправки сообщения-знакомства с карточками
     dates['greeting_date'] = (course_date - timedelta(days=1))
 
