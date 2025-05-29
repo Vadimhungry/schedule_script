@@ -35,6 +35,10 @@ async def schedule_posts(client, chat_info):
     with open("python/texts.json", "r", encoding="utf-8") as f:
         messages = json.load(f)
 
+    # получаем видосы
+    with open("python/videos.json", "r", encoding="utf-8") as f:
+        videos = json.load(f)
+
     # готовим пост-знакомство
     greeting_pictures = get_pictures("/Users/vadim/Documents/algoritmika/my_cards/")
 
@@ -59,11 +63,9 @@ async def schedule_posts(client, chat_info):
     )
 
     # обратная связь по дню 1
-    video_1 = "/Users/vadim/Documents/algoritmika/video/python_day_1_test.mp4"
-
     await client.send_file(
         chat_info["id"],
-        video_1,
+        videos["feedback_1"],
         supports_streaming=True,
         video_note=False,
         caption=messages["feedback_1"],
@@ -83,11 +85,9 @@ async def schedule_posts(client, chat_info):
     )
 
     # обратная связь по дню 2
-    video_2 = "/Users/vadim/Documents/algoritmika/video/python_day_2_test.mp4"
-
     await client.send_file(
         chat_info["id"],
-        video_2,
+        videos["feedback_2"],
         supports_streaming=True,
         video_note=False,
         caption=messages["feedback_2"],
@@ -105,11 +105,9 @@ async def schedule_posts(client, chat_info):
     )
 
     # обратная связь по дню 3
-    video_3 = "/Users/vadim/Documents/algoritmika/video/python_day_3_test.mp4"
-
     await client.send_file(
         chat_info["id"],
-        video_3,
+        videos["feedback_3"],
         supports_streaming=True,
         video_note=False,
         caption=messages["feedback_3"],
@@ -127,6 +125,4 @@ async def schedule_posts(client, chat_info):
         schedule=dates["feedback_3"],
     )
 
-    # todo минуты в постах должно всегда быть 2 цифры
-    # todo вынести получение видео в отдельный файл
     # todo вынести получение файлов в отдельный файл
