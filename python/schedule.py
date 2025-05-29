@@ -1,15 +1,19 @@
 import os
 import re
-from datetime import datetime, timedelta,timezone
+from datetime import datetime, timedelta, timezone
 from telethon.tl.types import DocumentAttributeVideo
 from python.dates import get_posts_dates
+import json
+
 
 def get_pictures(folder_path):
-    return sorted([
-        os.path.join(folder_path, f)
-        for f in os.listdir(folder_path)
-        if os.path.isfile(os.path.join(folder_path, f))
-    ])
+    return sorted(
+        [
+            os.path.join(folder_path, f)
+            for f in os.listdir(folder_path)
+            if os.path.isfile(os.path.join(folder_path, f))
+        ]
+    )
 
 
 async def schedule_posts(client, chat_info):
@@ -20,161 +24,110 @@ async def schedule_posts(client, chat_info):
             duration=0,  # длительность поставит Телеграм
             w=720,  # ширина
             h=1280,  # высота
-            supports_streaming=True
+            supports_streaming=True,
         )
     ]
 
     # получаем даты постов
-    dates = get_posts_dates(chat_info['title'])
+    dates = get_posts_dates(chat_info["title"])
+
+    # получаем тексты постов
+    with open("python/texts.json", "r", encoding="utf-8") as f:
+        messages = json.load(f)
 
     # готовим пост-знакомство
-    greeting_pictures = get_pictures('/Users/vadim/Documents/algoritmika/my_cards/')
-
-    greeting_text = '''
-    Здравствуйте, уважаемые родители! 
-
-Меня зовут Вадим, я буду вести мини-курс Программирование на Python👋 Подробнее об мне можете прочитать в карточках.
-
-Ближайшие три дня мы будем с вами много общаться. После каждого занятия я буду скидывать сюда видео с рассказом об итогах урока. Также с радостью отвечу на все вопросы по программе курса.
-
-Напомню, что ваше присутствие обязательно на первом и третьем занятиях. Так как я буду давать информацию для вас. К тому же, вы сможете поддержать своих детей, ведь новые незнакомые люди — это всегда волнительно! 
-
-До встречи!
-    '''
+    greeting_pictures = get_pictures("/Users/vadim/Documents/algoritmika/my_cards/")
 
     # пост-знакомство будет запланирован к публикации ровно за день до первого урока. Если это время в прошлом, пост публикуется сразу
-    await client.send_file(
-        chat_info['id'],
-        greeting_pictures,
-        caption=greeting_text,
-        schedule=dates['greeting_date']
-    )
+    # await client.send_file(
+    #     chat_info["id"],
+    #     greeting_pictures,
+    #     caption=messages["greeting"],
+    #     schedule=dates["greeting_date"],
+    # )
 
     # пост с чеклистом в первый день
 
-    checklist = '/Users/vadim/Documents/algoritmika/check-list.pdf'
-    chek_text = f'''
-    Всем здравствуйте!
+    checklist = "/Users/vadim/Documents/algoritmika/check-list.pdf"
 
-Через 30 минут начинаем обучение на мини-курсе по Python 🔥
-
-Жду вас и детей на онлайн-платформе в {dates['course_date'].hour}:{dates['course_date'].minute:02d} мск.
-
-А до начала занятия предлагаю проверить, что вы полностью готовы! Чтобы было проще, сделали для вас чек-лист 😉 Если что-то забыли — еще есть время доделать 💜'''
     await client.send_file(
-        chat_info['id'],
+        chat_info["id"],
         checklist,
-        caption=chek_text,
-        schedule=dates['checklist_date']
+        caption=messages["checklist"].format(
+            hour=dates["checklist_date"].hour, minute=dates["checklist_date"].minute
+        ),
+        schedule=dates["checklist_date"],
     )
 
     # обратная связь по дню 1
-    video_1 = '/Users/vadim/Documents/algoritmika/video/python_day_1_test.mp4'
-
-
-    feedback_1_text = '''
-    Еще раз здравствуйте, уважаемые родители!
-
-В видео рассказываю, чем мы с ребятами занимались на первом занятии и чему уже научились 😊
-
-Если есть вопросы, пожелания, комментарии по поводу прошедшего урока, пишите!'''
+    video_1 = "/Users/vadim/Documents/algoritmika/video/python_day_1_test.mp4"
 
     await client.send_file(
-        chat_info['id'],
+        chat_info["id"],
         video_1,
         supports_streaming=True,
         video_note=False,
-        caption=feedback_1_text,
-        schedule=dates['feedback_1'],
+        caption=messages["feedback_1"],
+        schedule=dates["feedback_1"],
         attributes=VIDEO_ATTRS,
     )
 
     # пост с карточками про Python во второй день
-    cards_pictures = get_pictures('/Users/vadim/Documents/algoritmika/python_img')
-    cards_text = f'''
-    Здравствуйте! Сегодня состоится второй урок мини-курса 😎
-
-Предлагаю вам побольше узнать про язык Python. Так вы будете лучше понимать, чем занимаются ребята на занятиях. И не растеряетесь, когда дети начнут рассказывать вам про алгоритмы, переменные и функции 😉 Читайте про Python в карточках.
-
-Если вдруг кто-то из детей пропустил первое занятие, можно сейчас пройти прошлый урок на онлайн-платформе.
-
-Жду ребят в {dates['course_date'].hour}:{dates['course_date'].minute:02d} на втором уроке!'''
+    cards_pictures = get_pictures("/Users/vadim/Documents/algoritmika/python_img")
     await client.send_file(
-        chat_info['id'],
+        chat_info["id"],
         cards_pictures,
-        caption=cards_text,
-        schedule=dates['cards']
+        caption=messages["cards"].format(
+            hour=dates["cards"].hour, minute=dates["cards"].minute
+        ),
+        schedule=dates["cards"],
     )
 
     # обратная связь по дню 2
-    video_2 = '/Users/vadim/Documents/algoritmika/video/python_day_2_test.mp4'
-
-    feedback_2_text = '''
-    Здравствуйте, дорогие родители!
-
-Продолжаю делиться результатами обучения на мини-курсе. Отправляю видео с рассказом о том, чем мы занимались на втором уроке 😊'''
+    video_2 = "/Users/vadim/Documents/algoritmika/video/python_day_2_test.mp4"
 
     await client.send_file(
-        chat_info['id'],
+        chat_info["id"],
         video_2,
         supports_streaming=True,
         video_note=False,
-        caption=feedback_2_text,
-        schedule=dates['feedback_2'],
+        caption=messages["feedback_2"],
+        schedule=dates["feedback_2"],
         attributes=VIDEO_ATTRS,
     )
 
     # приглашение на третий урок
-    final_text = f'''
-    Всем здравствуйте!
-
-Что ж, выходим на финишную прямую — сегодня на нашем мини-курсе будет мини-выпускной 🥳
-
-Дети покажут, чему научились за 3 урока. Мне бы хотелось, чтобы они поделились успехами не только со мной, но и с вами. Поэтому приглашаю вас подключиться к занятию. Также я расскажу, что делать после окончания курса.
-
-Если вдруг не получается прийти на весь урок, присоединяйтесь за 10 минут до окончания.
-
-Начинаем в {dates['course_date'].hour}:{dates['course_date'].minute:02d} по Москве💜'''
-
     await client.send_message(
-        chat_info['id'],
-        message=final_text,
-        schedule=dates['final']
+        chat_info["id"],
+        message=messages["final"].format(
+            hour=dates["final"].hour, minute=dates["final"].minute
+        ),
+        schedule=dates["final"],
     )
 
     # обратная связь по дню 3
-    video_3 = '/Users/vadim/Documents/algoritmika/video/python_day_3_test.mp4'
-
-    feedback_3_text = '''
-    Вот и подошел к концу наш мини-курс 😔 
- 
-Честно, было немного грустно записывать финальное видео с итогами, потому что жалко расставаться с ребятами!  Очень надеюсь, что ваши дети продолжат обучение в Алгоритмике, и мы еще встретимся и сделаем новые крутые проекты 😊 
- 
-На полном курсе Программирование на Python ребята создают компьютерные игры, приложения, ботов и автоответчики. Подробную программу и цены смотрите в прикрепленном файле. 
- 
-Всем участникам мини-курса я дарю скидку на покупку полного курса! Скидка действует 48 часов с настоящего момента. Успевайте воспользоваться 😉 
- 
-Также будет здорово, если поделитесь своими впечатлениями от занятий 💜 
- 
-До новых встреч!'''
+    video_3 = "/Users/vadim/Documents/algoritmika/video/python_day_3_test.mp4"
 
     await client.send_file(
-        chat_info['id'],
+        chat_info["id"],
         video_3,
         supports_streaming=True,
         video_note=False,
-        caption=feedback_3_text,
-        schedule=dates['feedback_3'],
+        caption=messages["feedback_3"],
+        schedule=dates["feedback_3"],
         attributes=VIDEO_ATTRS,
     )
 
     # пост с презентацией
-    checklist = '/Users/vadim/Documents/algoritmika/python_presentation.pdf'
-    chek_text = f'''
-    Файл с презентацией и ценами ✍️'''
+    presentation = "/Users/vadim/Documents/algoritmika/python_presentation.pdf"
+
     await client.send_file(
-        chat_info['id'],
-        file=checklist,
-        caption=chek_text,
-        schedule=dates['feedback_3']
+        chat_info["id"],
+        file=presentation,
+        caption=messages["presentation"],
+        schedule=dates["feedback_3"],
     )
+
+    # todo вынести получение текстов в отдельный файл
+    # todo вынести получение видео в отдельный файл
+    # todo вынести получение файлов в отдельный файл
