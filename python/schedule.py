@@ -1,17 +1,8 @@
-import os
+
 from telethon.tl.types import DocumentAttributeVideo
 from python.dates import get_posts_dates
+from python.pictures import get_python_pictures
 import json
-
-
-def get_pictures(folder_path):
-    return sorted(
-        [
-            os.path.join(folder_path, f)
-            for f in os.listdir(folder_path)
-            if os.path.isfile(os.path.join(folder_path, f))
-        ]
-    )
 
 
 async def schedule_posts(client, chat_info):
@@ -29,6 +20,9 @@ async def schedule_posts(client, chat_info):
     # получаем даты постов
     dates = get_posts_dates(chat_info["title"])
 
+    # получаем картинки
+    imgs = get_python_pictures()
+
     # получаем тексты постов
     with open("python/texts.json", "r", encoding="utf-8") as f:
         messages = json.load(f)
@@ -37,23 +31,23 @@ async def schedule_posts(client, chat_info):
     with open("python/videos.json", "r", encoding="utf-8") as f:
         videos = json.load(f)
 
-    # готовим пост-знакомство
-    greeting_pictures = get_pictures("/Users/vadim/Documents/algoritmika/my_cards/")
+    # получаем файлы
+    with open("python/files.json", "r", encoding="utf-8") as f:
+        files = json.load(f)
 
-    # пост-знакомство будет запланирован к публикации ровно за день до первого урока. Если это время в прошлом, пост публикуется сразу
+    # пост-знакомство будет запланирован к публикации ровно за день до первого урока.
+    # Если это время в прошлом, пост публикуется сразу
     await client.send_file(
         chat_info["id"],
-        greeting_pictures,
+        imgs["greeting"],
         caption=messages["greeting"],
         schedule=dates["greeting_date"],
     )
 
     # пост с чеклистом в первый день
-    checklist = "/Users/vadim/Documents/algoritmika/check-list.pdf"
-
     await client.send_file(
         chat_info["id"],
-        checklist,
+        files["checklist"],
         caption=messages["checklist"].format(
             hour=dates["course_hour"], minute=dates["course_minute"]
         ),
@@ -72,10 +66,9 @@ async def schedule_posts(client, chat_info):
     )
 
     # пост с карточками про Python во второй день
-    cards_pictures = get_pictures("/Users/vadim/Documents/algoritmika/python_img")
     await client.send_file(
         chat_info["id"],
-        cards_pictures,
+        imgs["cards"],
         caption=messages["cards"].format(
             hour=dates["course_hour"], minute=dates["course_minute"]
         ),
@@ -114,14 +107,9 @@ async def schedule_posts(client, chat_info):
     )
 
     # пост с презентацией
-    presentation = "/Users/vadim/Documents/algoritmika/python_presentation.pdf"
-
     await client.send_file(
         chat_info["id"],
-        file=presentation,
+        files["presentation"],
         caption=messages["presentation"],
         schedule=dates["feedback_3"],
     )
-
-    # todo вынести получение файлов в отдельный файл
-    # todo удалить тест файл
