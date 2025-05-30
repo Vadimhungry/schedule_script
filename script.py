@@ -1,14 +1,14 @@
 from telethon import TelegramClient
-from python.schedule import schedule_posts
+from python.schedule import schedule_python
 from dotenv import load_dotenv
 import os
 
 
 load_dotenv()  # Загружаем переменные из .env
 
-api_id = int(os.getenv('API_ID'))
-api_hash = os.getenv('API_HASH')
-client = TelegramClient('my_user', api_id, api_hash)
+api_id = int(os.getenv("API_ID"))
+api_hash = os.getenv("API_HASH")
+client = TelegramClient("my_user", api_id, api_hash)
 
 
 async def main():
@@ -26,36 +26,61 @@ async def main():
     max_results = 10
 
     # Ищем чаты с нужным ключевым словом
-    keyword = 'Мини-курс'
+    keyword = "Мини-курс"
     for dialog in dialogs:
         entity = dialog.entity
-        if ((getattr(entity, 'megagroup', False) or getattr(entity, 'broadcast', False))
-                and keyword.lower() in entity.title.lower()):
-            found_chats.append({
-                'title': entity.title,
-                'id': entity.id,
-                'access_hash': entity.access_hash
-            })
+        if (
+            getattr(entity, "megagroup", False) or getattr(entity, "broadcast", False)
+        ) and keyword.lower() in entity.title.lower():
+            found_chats.append(
+                {
+                    "title": entity.title,
+                    "id": entity.id,
+                    "access_hash": entity.access_hash,
+                }
+            )
             count += 1
             print(f"{count}. {entity.title}")
-
 
         if count >= max_results:
             break
 
-    # Если чаты найдены, позволяем выбрать
+    # Выбор чата для постинга
     if found_chats:
         choice = input(f"\nВыберите чат (1-{len(found_chats)}): ")
         try:
             choice = int(choice)
             if 1 <= choice <= len(found_chats):
                 selected_chat = found_chats[choice - 1]
-                print(f"\nВы выбрали чат: {selected_chat['title']}, ID: {selected_chat['id']}")
-                await schedule_posts(client, selected_chat)
+                print(
+                    f"\nВы выбрали чат: {selected_chat['title']}, ID: {selected_chat['id']}"
+                )
             else:
                 print("Некорректный выбор!")
         except ValueError:
             print("Пожалуйста, введите номер чата из списка.")
+
+    if "Python" in selected_chat["title"]:
+        print("Ты выбрал Python. Выбери программу курса:")
+        print("1. Стандарт")
+        print("2. TurtlePython")
+        python_type = input("Введи номер из списка: ")
+        try:
+            if python_type == "1":
+                print("Выбран старый курс Python, начинаю постинг")
+                await schedule_python(client, selected_chat)
+            elif python_type == "2":
+                print("Выбран черепаший курс Python, начинаю постинг")
+            else:
+                print("Некорректный выбор!")
+        except ValueError:
+            print("Пожалуйста, введите номер чата из списка.")
+
+    if "Scratch" in selected_chat["title"]:
+        pass
+
+    if "Геймдизайн" in selected_chat["title"]:
+        pass
 
 
 with client:

@@ -5,7 +5,7 @@ from python.pictures import get_python_pictures
 import json
 
 
-async def schedule_posts(client, chat_info):
+async def schedule_python(client, chat_info):
 
     # настройка для корректного постинга видео
     VIDEO_ATTRS = [
