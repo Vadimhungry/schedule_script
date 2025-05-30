@@ -1,6 +1,4 @@
 import os
-import re
-from datetime import datetime, timedelta, timezone
 from telethon.tl.types import DocumentAttributeVideo
 from python.dates import get_posts_dates
 import json
@@ -126,3 +124,4 @@ async def schedule_posts(client, chat_info):
     )
 
     # todo вынести получение файлов в отдельный файл
+    # todo удалить тест файл
