@@ -1,5 +1,6 @@
 from telethon import TelegramClient
 from python.schedule import schedule_python
+from scratch.schedule import schedule_scratch
 from dotenv import load_dotenv
 import os
 
@@ -61,23 +62,10 @@ async def main():
             print("Пожалуйста, введите номер чата из списка.")
 
     if "Python" in selected_chat["title"]:
-        print("Ты выбрал Python. Выбери программу курса:")
-        print("1. Стандарт")
-        print("2. TurtlePython")
-        python_type = input("Введи номер из списка: ")
-        try:
-            if python_type == "1":
-                print("Выбран старый курс Python, начинаю постинг")
-                await schedule_python(client, selected_chat)
-            elif python_type == "2":
-                print("Выбран черепаший курс Python, начинаю постинг")
-            else:
-                print("Некорректный выбор!")
-        except ValueError:
-            print("Пожалуйста, введите номер чата из списка.")
+        await schedule_python(client, selected_chat)
 
     if "Scratch" in selected_chat["title"]:
-        pass
+        schedule_scratch
 
     if "Геймдизайн" in selected_chat["title"]:
         pass
