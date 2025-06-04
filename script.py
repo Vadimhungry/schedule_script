@@ -65,7 +65,7 @@ async def main():
         await schedule_python(client, selected_chat)
 
     if "Scratch" in selected_chat["title"]:
-        schedule_scratch
+        await schedule_scratch(client, selected_chat)
 
     if "Геймдизайн" in selected_chat["title"]:
         pass
