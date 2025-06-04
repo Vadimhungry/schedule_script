@@ -70,6 +70,8 @@ async def main():
     if "Геймдизайн" in selected_chat["title"]:
         pass
 
+    print("💜Постинг запланирован💜")
+
 
 with client:
     client.loop.run_until_complete(main())

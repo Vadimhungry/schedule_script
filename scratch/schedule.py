@@ -122,3 +122,4 @@ async def schedule_scratch(client, chat_info):
         caption=messages["presentation"],
         schedule=dates["feedback_3"],
     )
+

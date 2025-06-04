@@ -21,6 +21,3 @@ def get_python_pictures():
     )
     pictures["invitation"] = "/Users/vadim/Documents/algoritmika/scratch_invitation.jpeg"
     return pictures
-
-
-print(get_python_pictures())

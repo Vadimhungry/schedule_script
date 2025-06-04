@@ -20,6 +20,3 @@ def get_python_pictures():
         "/Users/vadim/Documents/algoritmika/python_img"
     )
     return pictures
-
-
-print(get_python_pictures())
